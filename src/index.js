@@ -2,22 +2,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('search-form');
     const gallery = document.querySelector('.gallery');
     const loadMoreBtn = document.querySelector('.load-more');
-    let page = 1; // początkowa wartość strony
+    let page = 1;
 
     form.addEventListener('submit', function (event) {
-        event.preventDefault(); // Zapobiegamy domyślnej akcji formularza
+        event.preventDefault();
 
-        const searchQuery = form.searchQuery.value.trim(); // Pobieramy wartość z pola wyszukiwania
-        if (searchQuery === '') return; // Sprawdzamy, czy pole wyszukiwania nie jest puste
+        const searchQuery = form.searchQuery.value.trim();
+        if (searchQuery === '') return;
 
-        // Resetujemy galerię przy każdym nowym wyszukiwaniu
         gallery.innerHTML = '';
 
-        searchImages(searchQuery); // Wywołujemy funkcję wyszukiwania obrazków
+        searchImages(searchQuery); 
     });
 
     function searchImages(searchQuery) {
-        const apiKey = '43689937-ac603d3a8790355bd35895aa3'; // Tutaj wstaw swój unikalny klucz dostępu
+        const apiKey = '43689937-ac603d3a8790355bd35895aa3';
 
         const apiUrl = `https://pixabay.com/api/?key=${apiKey}&q=${searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
 
@@ -30,21 +29,18 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(data => {
                 if (data.hits.length === 0) {
-                    // Wyświetlamy powiadomienie, jeśli nie znaleziono obrazków
                     Notiflix.Notify.Failure("Sorry, there are no images matching your search query. Please try again.");
                     return;
                 }
 
                 data.hits.forEach(image => {
-                    const photoCard = createPhotoCard(image); // Tworzymy kartę obrazka
-                    gallery.appendChild(photoCard); // Dodajemy kartę do galerii
+                    const photoCard = createPhotoCard(image); 
+                    gallery.appendChild(photoCard);
                 });
 
-                // Wyświetlamy przycisk "Load more" jeśli jest więcej wyników
                 if (data.totalHits > gallery.children.length) {
                     loadMoreBtn.style.display = 'block';
                 } else {
-                    // Ukrywamy przycisk jeśli nie ma więcej wyników
                     loadMoreBtn.style.display = 'none';
                 }
             })
@@ -92,10 +88,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return photoCard;
     }
 
-    // Obsługa przycisku "Load more"
     loadMoreBtn.addEventListener('click', function () {
-        page++; // Zwiększamy numer strony
-        const searchQuery = form.searchQuery.value.trim(); // Pobieramy aktualny termin wyszukiwania
-        searchImages(searchQuery); // Wywołujemy ponownie funkcję wyszukiwania obrazków
+        page++;
+        const searchQuery = form.searchQuery.value.trim();
+        searchImages(searchQuery);
     });
 });
