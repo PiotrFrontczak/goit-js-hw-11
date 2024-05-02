@@ -17,11 +17,6 @@ body {
     padding: 20px;
 }
 
-h1 {
-    text-align: center;
-    color: #333;
-}
-
 .search-form {
     display: flex;
     margin-bottom: 20px;
@@ -78,7 +73,6 @@ button[type="submit"]:hover, .load-more:hover {
     background-color: rgba(0, 0, 0, 0.8);
     color: #252525;
     padding: 10px;
-    text-align: center;
 }
 
 .info p {
@@ -98,4 +92,9 @@ button[type="submit"]:hover, .load-more:hover {
 .photo-card .info .info-item {
     display: block;
     margin-bottom: 5px;
+}
+
+.load-more {
+    display: block;
+    margin: 20px auto;
 }
