@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function searchImages(searchQuery) {
-        const apiKey = 'TWÓ43689937-ac603d3a8790355bd35895aa3'; // Tutaj wstaw swój unikalny klucz dostępu
+        const apiKey = '43689937-ac603d3a8790355bd35895aa3'; // Tutaj wstaw swój unikalny klucz dostępu
 
         const apiUrl = `https://pixabay.com/api/?key=${apiKey}&q=${searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
 
