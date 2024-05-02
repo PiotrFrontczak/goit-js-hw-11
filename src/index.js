@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const gallery = document.querySelector('.gallery');
     const loadMoreBtn = document.querySelector('.load-more');
     let page = 1;
+    let lightbox;
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         gallery.innerHTML = '';
 
-        searchImages(searchQuery); 
+        searchImages(searchQuery);
     });
 
     function searchImages(searchQuery) {
@@ -34,14 +35,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 data.hits.forEach(image => {
-                    const photoCard = createPhotoCard(image); 
-                    gallery.appendChild(photoCard);
+                    const photoCard = createPhotoCard(image);
+                    gallery.appendChild(photoCard); 
                 });
 
                 if (data.totalHits > gallery.children.length) {
                     loadMoreBtn.style.display = 'block';
                 } else {
                     loadMoreBtn.style.display = 'none';
+                }
+
+                if (lightbox) {
+                    lightbox.refresh();
+                } else {
+                    lightbox = new SimpleLightbox('.gallery a', {});
                 }
             })
             .catch(error => {
@@ -53,37 +60,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const photoCard = document.createElement('div');
         photoCard.classList.add('photo-card');
 
+        const link = document.createElement('a');
+        link.href = image.largeImageURL;
+
         const img = document.createElement('img');
         img.src = image.webformatURL;
         img.alt = image.tags;
         img.loading = 'lazy';
 
-        const info = document.createElement('div');
-        info.classList.add('info');
-
-        const likes = document.createElement('p');
-        likes.classList.add('info-item');
-        likes.innerHTML = `<b>Likes:</b> ${image.likes}`;
-
-        const views = document.createElement('p');
-        views.classList.add('info-item');
-        views.innerHTML = `<b>Views:</b> ${image.views}`;
-
-        const comments = document.createElement('p');
-        comments.classList.add('info-item');
-        comments.innerHTML = `<b>Comments:</b> ${image.comments}`;
-
-        const downloads = document.createElement('p');
-        downloads.classList.add('info-item');
-        downloads.innerHTML = `<b>Downloads:</b> ${image.downloads}`;
-
-        info.appendChild(likes);
-        info.appendChild(views);
-        info.appendChild(comments);
-        info.appendChild(downloads);
-
-        photoCard.appendChild(img);
-        photoCard.appendChild(info);
+        link.appendChild(img);
+        photoCard.appendChild(link);
 
         return photoCard;
     }
