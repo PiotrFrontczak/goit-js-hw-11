@@ -1,21 +1,21 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('search-form');
     const gallery = document.querySelector('.gallery');
     const loadMoreBtn = document.querySelector('.load-more');
     let page = 1;
-    let lightbox; 
+    let lightbox;
 
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
 
-        const searchQuery = form.searchQuery.value.trim(); 
-        if (searchQuery === '') return; 
+        const searchQuery = form.searchQuery.value.trim();
+        if (searchQuery === '') return;
 
         gallery.innerHTML = '';
 
         try {
-            await searchImages(searchQuery); 
+            await searchImages(searchQuery);
+            smoothScrollToGallery();
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
         }
@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             data.hits.forEach(image => {
-                const photoCard = createPhotoCard(image); 
-                gallery.appendChild(photoCard); 
+                const photoCard = createPhotoCard(image);
+                gallery.appendChild(photoCard);
             });
 
             if (data.totalHits > gallery.children.length) {
@@ -101,7 +101,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadMoreBtn.addEventListener('click', function () {
         page++;
-        const searchQuery = form.searchQuery.value.trim(); 
+        const searchQuery = form.searchQuery.value.trim();
         searchImages(searchQuery);
+        smoothScrollToGallery();
     });
+
+    function smoothScrollToGallery() {
+        const { height: cardHeight } = document
+            .querySelector(".gallery")
+            .firstElementChild.getBoundingClientRect();
+
+        window.scrollBy({
+            top: cardHeight * 2,
+            behavior: "smooth",
+        });
+    }
 });
