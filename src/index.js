@@ -2,59 +2,57 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('search-form');
     const gallery = document.querySelector('.gallery');
     const loadMoreBtn = document.querySelector('.load-more');
-    let page = 1; // początkowa wartość strony
-    let lightbox; // zmienna przechowująca instancję SimpleLightbox
+    let page = 1;
+    let lightbox; 
 
-    form.addEventListener('submit', function (event) {
-        event.preventDefault(); // Zapobiegamy domyślnej akcji formularza
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
 
-        const searchQuery = form.searchQuery.value.trim(); // Pobieramy wartość z pola wyszukiwania
-        if (searchQuery === '') return; // Sprawdzamy, czy pole wyszukiwania nie jest puste
+        const searchQuery = form.searchQuery.value.trim(); 
+        if (searchQuery === '') return; 
 
-        // Resetujemy galerię przy każdym nowym wyszukiwaniu
         gallery.innerHTML = '';
 
-        searchImages(searchQuery); // Wywołujemy funkcję wyszukiwania obrazków
+        try {
+            await searchImages(searchQuery); 
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
     });
 
-    function searchImages(searchQuery) {
-        const apiKey = '43689937-ac603d3a8790355bd35895aa3'; // Twój unikalny klucz dostępu do API Pixabay
+    async function searchImages(searchQuery) {
+        const apiKey = '43689937-ac603d3a8790355bd35895aa3';
 
         const apiUrl = `https://pixabay.com/api/?key=${apiKey}&q=${searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`;
 
-        axios.get(apiUrl)
-            .then(response => {
-                const data = response.data;
+        try {
+            const response = await axios.get(apiUrl);
+            const data = response.data;
 
-                if (data.hits.length === 0) {
-                    // Wyświetlamy powiadomienie, jeśli nie znaleziono obrazków
-                    Notiflix.Notify.Failure("Sorry, there are no images matching your search query. Please try again.");
-                    return;
-                }
+            if (data.hits.length === 0) {
+                Notiflix.Notify.Failure("Sorry, there are no images matching your search query. Please try again.");
+                return;
+            }
 
-                data.hits.forEach(image => {
-                    const photoCard = createPhotoCard(image); // Tworzymy kartę obrazka
-                    gallery.appendChild(photoCard); // Dodajemy kartę do galerii
-                });
-
-                // Wyświetlamy przycisk "Load more" jeśli jest więcej wyników
-                if (data.totalHits > gallery.children.length) {
-                    loadMoreBtn.style.display = 'block';
-                } else {
-                    // Ukrywamy przycisk jeśli nie ma więcej wyników
-                    loadMoreBtn.style.display = 'none';
-                }
-
-                // Inicjalizacja lub odświeżenie SimpleLightbox po dodaniu nowych obrazków
-                if (lightbox) {
-                    lightbox.refresh();
-                } else {
-                    lightbox = new SimpleLightbox('.gallery a', {});
-                }
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
+            data.hits.forEach(image => {
+                const photoCard = createPhotoCard(image); 
+                gallery.appendChild(photoCard); 
             });
+
+            if (data.totalHits > gallery.children.length) {
+                loadMoreBtn.style.display = 'block';
+            } else {
+                loadMoreBtn.style.display = 'none';
+            }
+
+            if (lightbox) {
+                lightbox.refresh();
+            } else {
+                lightbox = new SimpleLightbox('.gallery a', {});
+            }
+        } catch (error) {
+            throw new Error('There was a problem with the fetch operation:', error);
+        }
     }
 
     function createPhotoCard(image) {
@@ -100,10 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return photoCard;
     }
 
-    // Obsługa przycisku "Load more"
     loadMoreBtn.addEventListener('click', function () {
-        page++; // Zwiększamy numer strony
-        const searchQuery = form.searchQuery.value.trim(); // Pobieramy aktualny termin wyszukiwania
-        searchImages(searchQuery); // Wywołujemy ponownie funkcję wyszukiwania obrazków
+        page++;
+        const searchQuery = form.searchQuery.value.trim(); 
+        searchImages(searchQuery);
     });
 });
